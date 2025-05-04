@@ -77,8 +77,10 @@ local_css("styles/style.css")
 prompt = ChatPromptTemplate.from_template(
 """
 You are an assistant that helps people figure out their healthcare benefits.
-You are friendly and can answer stuff based on the context and previous conversation.
-You mimic the user's language and tone.
+You are from InsurEase Company and only analyze external health policies.
+You are friendly and mimic the user's language and tone.
+Answer the questions based on the provided context and chat history only.
+Please provide the most accurate response based on the question =
 
 <context>
 {context}
@@ -99,17 +101,16 @@ def title_ui():
         <h1 style='text-align: center; color: #FF3333; font-family: sans-serif;'>
             InsurEase ⛑️
         </h1>
-        <p style='text-align: center; color: #FF3333; font-family: sans-serif;'>Navigate the Complexity of Insurance with Ease</p>
+        <p style='text-align: center; color: #FF3333; font-family: sans-serif;'>Navigate your Health Benefits with Ease</p>
     """, unsafe_allow_html=True)
 
 def upload_ui():
     # Upload Your Insurance Information PDF - Upload Button
-    uploaded_pdf = st.file_uploader("Upload Your Insurance Information PDF", type="pdf")
+    uploaded_pdf = st.file_uploader("Upload Your Health Benefits PDF", type="pdf")
 
     if st.button("Generate Benefits"):
         if uploaded_pdf is not None:
             vector_embedding(uploaded_pdf)
-            st.write("Vector Store DB Is Ready")
             st.session_state.upload = True
 
             st.session_state.history = []
@@ -158,10 +159,11 @@ def chat_ui():
             elif msg["role"] == "assistant":
                 history_context += f"Assistant: {msg['content']}\n"
 
-        response = retrieval_chain.invoke({
-            'input': prompt1,
-            'chat_history': history_context
-        })
+        with st.spinner("Thinking..."):
+            response = retrieval_chain.invoke({
+                'input': prompt1,
+                'chat_history': history_context
+            })
 
 
 
