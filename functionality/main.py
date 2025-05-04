@@ -2,7 +2,8 @@ import streamlit as st
 from dotenv import load_dotenv
 import os
 import time
-from groq import Groq
+import tempfile
+# from groq import Groq
 from pydantic import SecretStr
 from langchain_groq import ChatGroq
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -22,10 +23,22 @@ llm = ChatGroq(api_key=SecretStr(groq_api_key), model="Llama3-8b-8192") # type: 
 
 
 
-def vector_embedding():
+def vector_embedding(uploaded_pdf):
+
+    if "vectors" in st.session_state:
+        del st.session_state.vectors
+    if "embeddings" in st.session_state:
+        del st.session_state.embeddings
+    if "loader" in st.session_state:
+        del st.session_state.loader
+
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(uploaded_pdf.read())
+        temp_file_path = temp_file.name
+
     if "vectors" not in st.session_state:
         st.session_state.embeddings=GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-        st.session_state.loader = PyPDFLoader("./sample_datasets/ex2.pdf")        
+        st.session_state.loader = PyPDFLoader(temp_file_path)        
         st.session_state.docs=st.session_state.loader.load() ## Document Loading
         st.session_state.text_splitter=RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200) ## Chunk Creation
         st.session_state.final_documents=st.session_state.text_splitter.split_documents(st.session_state.docs[:20]) #splitting
@@ -48,12 +61,11 @@ def local_css(file_name):
 local_css("styles/style.css")
 
 
-
-# remove later
 prompt=ChatPromptTemplate.from_template(
 """
 You are an assistant that help people figure out their healthcare
-benefits.
+benefits. You are friendly and can answer stuff based on the context. 
+You can talk like a person and not an AI. mimic the person's language. 
 Answer the questions based on the provided context only.
 Please provide the most accurate response based on the question
 <context>
@@ -63,10 +75,6 @@ Questions:{input}
 
 """
 )
-
-
-
-
 
 def title_ui():
 
@@ -92,10 +100,20 @@ def upload_ui():
 
     if st.button("Generate Benefits"):
         if uploaded_pdf is not None:
-            vector_embedding()
+            vector_embedding(uploaded_pdf)
             st.write("Vector Store DB Is Ready")
+            st.session_state.upload = True
+
+            st.session_state.history = []
         else:
             st.warning("Please upload a PDF before generating.")
+            st.session_state.upload = False
+
+    if "upload" in st.session_state:
+        return st.session_state.upload
+    else:
+        return False
+    
 
 def chat_ui():
     st.header("Chat", anchor=False)
@@ -103,19 +121,17 @@ def chat_ui():
     if "history" not in st.session_state:
         st.session_state.history = []
 
-    messages = st.container(border=True, height=600)
 
-    with messages:
-        for message in st.session_state.history:
-            if message["role"] == "user":
-                st.write(f"**You**: {message['content']}")
-            else:
-                st.write(f"**Assistant**: {message['content']}")
-                with st.expander("Document Similarity Search"):
-                    # Find the relevant chunks
-                    for i, doc in enumerate(message["extra"]):
-                        st.write(doc.page_content)
-                        st.write("--------------------------------")
+    for message in st.session_state.history:
+        if message["role"] == "user":
+            st.write(f"**You**: {message['content']}")
+        else:
+            st.write(f"**Assistant**: {message['content']}")
+            with st.expander("Document Similarity Search"):
+                # Find the relevant chunks
+                for i, doc in enumerate(message["extra"]):
+                    st.write(doc.page_content)
+                    st.write("--------------------------------")
 
     prompt1 = st.chat_input("Ask Questions about your Insurance", key="prompt")
 
@@ -126,33 +142,62 @@ def chat_ui():
         retrieval_chain=create_retrieval_chain(retriever,document_chain)
         start=time.process_time()
         response=retrieval_chain.invoke({'input':prompt1})
+
+
         st.session_state.history.append({"role": "assistant", "content": response['answer'], "extra":response["context"]})
 
         # With a streamlit expander
-        st.write(response['answer'])
+        st.write(f"**You**: {prompt1}")
+        st.write(f"**Assistant**: {response['answer']}")
         with st.expander("Document Similarity Search"):
             # Find the relevant chunks
             for i, doc in enumerate(response["context"]):
                 st.write(doc.page_content)
                 st.write("--------------------------------")
 
+# Simulate the process of extracting available benefits
+def extract_benefits():
+    st.session_state.benefits = [
+        {
+            "benefit_name": "Health Coverage",
+            "terms": "Valid for individuals up to 65 years old.",
+            "coverage": "Up to $100,000 per year",
+        },
+        {
+            "benefit_name": "Dental Coverage",
+            "terms": "Valid for individuals of all ages.",
+            "coverage": "Up to $10,000 per year",
+        },
+        {
+            "benefit_name": "Vision Coverage",
+            "terms": "Valid for individuals up to 70 years old.",
+            "coverage": "Up to $5,000 per year",
+        },
+    ]
 
 def benefits_ui():
+    extract_benefits()
+    
     st.header("Available Benefits", anchor=False)
+
+    if "benefits" in st.session_state and st.session_state.benefits:
+        for benefit in st.session_state.benefits:
+            with st.expander(benefit["benefit_name"]):
+                st.write(f"**Terms:** {benefit['terms']}")
+                st.write(f"**Coverage:** {benefit['coverage']}")
+                st.checkbox(f"Select {benefit['benefit_name']}")
+
+    else:
+        st.write("No benefits to display. Please upload a document and click 'Generate Benefits'.")
 
 def main():
 
     title_ui()
 
-    upload_ui()
-
-    col1, col2 = st.columns(2, gap="large") #, vertical_alignment="center"
-
-    with col2 :
-        chat_ui()
-    
-    with col1 :
+    if upload_ui():
         benefits_ui()
+        chat_ui()
+        
 
 
 if __name__ == "__main__" :
