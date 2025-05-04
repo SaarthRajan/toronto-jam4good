@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os
 import time
 import tempfile
-# from groq import Groq
 from pydantic import SecretStr
 from langchain_groq import ChatGroq
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -20,8 +19,6 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 google_api_key = os.getenv("GOOGLE_API_KEY")
 
 llm = ChatGroq(api_key=SecretStr(groq_api_key), model="Llama3-8b-8192") # type: ignore
-
-
 
 def vector_embedding(uploaded_pdf):
 
@@ -61,31 +58,42 @@ def local_css(file_name):
 local_css("styles/style.css")
 
 
-prompt=ChatPromptTemplate.from_template(
+# prompt=ChatPromptTemplate.from_template(
+# """
+# You are an assistant that help people figure out their healthcare
+# benefits. You are friendly and can answer stuff based on the context. 
+# You can talk like a person and not an AI. mimic the person's language. 
+# Answer the questions based on the provided context only.
+# Please provide the most accurate response based on the question
+# <context>
+# {context}
+# <context>
+# Questions:{input}
+
+# """
+# )
+
+
+prompt = ChatPromptTemplate.from_template(
 """
-You are an assistant that help people figure out their healthcare
-benefits. You are friendly and can answer stuff based on the context. 
-You can talk like a person and not an AI. mimic the person's language. 
-Answer the questions based on the provided context only.
-Please provide the most accurate response based on the question
+You are an assistant that helps people figure out their healthcare benefits.
+You are friendly and can answer stuff based on the context and previous conversation.
+You mimic the user's language and tone.
+
 <context>
 {context}
-<context>
-Questions:{input}
+</context>
 
+<chat_history>
+{chat_history}
+</chat_history>
+
+Question: {input}
 """
 )
 
+
 def title_ui():
-
-    # might remove icon and add a logo
-    # might even remove the title - just have the image
-
-    # # to center the image
-    # cols = st.columns(4) # change accordingly
-    # with cols[1]:
-        # InsurEase logo here
-        # st.image("./space_apps_logo.png", width=300)
 
     st.markdown("""
         <h1 style='text-align: center; color: #FF3333; font-family: sans-serif;'>
@@ -141,7 +149,20 @@ def chat_ui():
         retriever=st.session_state.vectors.as_retriever()
         retrieval_chain=create_retrieval_chain(retriever,document_chain)
         start=time.process_time()
-        response=retrieval_chain.invoke({'input':prompt1})
+        # response=retrieval_chain.invoke({'input':prompt1})
+
+        history_context = ""
+        for msg in st.session_state.history:
+            if msg["role"] == "user":
+                history_context += f"User: {msg['content']}\n"
+            elif msg["role"] == "assistant":
+                history_context += f"Assistant: {msg['content']}\n"
+
+        response = retrieval_chain.invoke({
+            'input': prompt1,
+            'chat_history': history_context
+        })
+
 
 
         st.session_state.history.append({"role": "assistant", "content": response['answer'], "extra":response["context"]})
