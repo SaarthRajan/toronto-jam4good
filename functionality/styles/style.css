@@ -9,13 +9,3 @@ header {visibility: hidden;}
     padding-left: 0rem;
     padding-right: 0rem;
 }
-
-h1::before {
-    content: none !important;
-}
-h1 {
-    pointer-events: none;
-}
-/* * {
-    text-align: center;
-} */

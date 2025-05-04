@@ -34,6 +34,12 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+5. Create a .env file and add groq api key and google api key. 
+```bash
+GROQ_API_KEY=XXXXXXXXXXXXXXXXXXXXX
+GOOGLE_API_KEY=XXXXXXXXXXXXXXXXXXXXX
+```
+
 ## How to run the app
 To run the app use the command:
 ```bash
