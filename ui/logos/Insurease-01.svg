@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 234.38px;
+        font-variation-settings: 'wght' 700;
+        font-weight: 700;
+      }
+
+      .cls-1, .cls-2 {
+        fill: #3c15ff;
+      }
+
+      .cls-3 {
+        fill: #6c54f8;
+      }
+
+      .cls-4 {
+        fill: #fff;
+      }
+
+      .cls-5 {
+        font-family: PlusJakartaSansItalic-BoldItalic, 'Plus Jakarta Sans';
+        font-style: italic;
+      }
+
+      .cls-6 {
+        fill: #d5cefd;
+      }
+
+      .cls-7 {
+        font-family: PlusJakartaSans-Bold, 'Plus Jakarta Sans';
+      }
+
+      .cls-8 {
+        fill: #a091fa;
+      }
+    </style>
+  </defs>
+  <path class="cls-6" d="M577.66,546.76c0-76.16-61.74-137.9-137.9-137.9-76.16,0-241.23,61.74-241.23,137.9,0,76.16,165.08,137.9,241.23,137.9s137.9-61.74,137.9-137.9Z"/>
+  <path class="cls-8" d="M577.66,546.76c0-76.16-61.74-137.9-137.9-137.9-76.16,0-206.79,61.74-206.79,137.9s130.63,137.9,206.79,137.9,137.9-61.74,137.9-137.9Z"/>
+  <path class="cls-3" d="M577.66,546.76c0-76.16-61.74-137.9-137.9-137.9-76.16,0-172.34,61.74-172.34,137.9s96.18,137.9,172.34,137.9,137.9-61.74,137.9-137.9Z"/>
+  <circle class="cls-2" cx="439.77" cy="546.76" r="137.9"/>
+  <path class="cls-4" d="M396.74,546.46l-4.2,1.56,4.2,1.56c21.18,7.84,37.88,24.53,45.71,45.71l1.56,4.2,1.56-4.2c7.84-21.18,24.53-37.88,45.71-45.71l4.2-1.56-4.2-1.56c-21.18-7.84-37.88-24.53-45.71-45.71l-1.56-4.2-1.56,4.2c-7.84,21.18-24.53,37.88-45.71,45.71Z"/>
+  <text class="cls-1" transform="translate(627.15 620.89)"><tspan class="cls-7" x="0" y="0">Insur</tspan><tspan class="cls-5" x="551.49" y="0">ease</tspan></text>
+  <rect class="cls-4" x="1667.75" y="575.54" width="43.86" height="56.11"/>
+  <path class="cls-2" d="M1678.17,607.4h0s0,0,0,0c8.37,3.1,14.97,9.7,18.06,18.06h0s0,0,0,0c3.1-8.37,9.7-14.97,18.06-18.06h0s0,0,0,0c-8.37-3.1-14.97-9.7-18.06-18.06h0s0,0,0,0c-3.1,8.37-9.7,14.97-18.06,18.06Z"/>
+</svg>

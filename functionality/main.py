@@ -99,7 +99,7 @@ def title_ui():
 
     st.markdown("""
         <h1 style='text-align: center; color: #FF3333; font-family: sans-serif;'>
-            InsurEase ⛑️
+            InsurEase
         </h1>
         <p style='text-align: center; color: #FF3333; font-family: sans-serif;'>Navigate your Health Benefits with Ease</p>
     """, unsafe_allow_html=True)
