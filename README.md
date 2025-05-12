@@ -14,3 +14,4 @@ This contains our submission to Toronto Jam4Good
 - Sanvitti (Designer)
 - Shreya (Designer)
 
+**Note**: This repo is Open Source as per the requirements of the Hackathon. It is licensed under MIT, so feel free to use it without restrictions. 
